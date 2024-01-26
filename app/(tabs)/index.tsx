@@ -12,11 +12,13 @@ import Constants from "expo-constants";
 import { AntDesign } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function TabOneScreen() {
   const [data1, setData1] = useState<any>([]);
   const [data2, setData2] = useState<any>([]);
+  const router = useRouter();
+
   useEffect(() => {
     const fetchData1 = async () => {
       try {
@@ -33,7 +35,7 @@ export default function TabOneScreen() {
     const fetchData2 = async () => {
       try {
         const result = await axios.get(
-          "https://kitsu.io/api/edge/anime?filter[status]=upcoming"
+          "https://kitsu.io/api/edge/anime?filter[status]=current"
         );
         setData2(result.data.data);
       } catch (error) {
@@ -155,17 +157,24 @@ export default function TabOneScreen() {
               >
                 Top Hits Anime
               </Text>
-              <Text style={{ color: "green" }}>see all</Text>
+              <Text
+                onPress={() => router.push(`/all/TopHitsAnime`)}
+                style={{ color: "green" }}
+              >
+                see all
+              </Text>
             </View>
 
             <FlatList
               horizontal={true}
               data={data1}
               renderItem={({ item }) => (
-                <Link href={`/info/${item.id}`}>
+                <TouchableOpacity
+                  onPress={() => router.push(`/info/${item.id}`)}
+                >
                   <Image
                     source={{
-                      uri: `${item.attributes.posterImage.tiny}`,
+                      uri: `${item.attributes.posterImage.small}`,
                     }}
                     style={{
                       width: 150,
@@ -174,7 +183,7 @@ export default function TabOneScreen() {
                       borderRadius: 10,
                     }}
                   />
-                </Link>
+                </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id}
             />
@@ -193,26 +202,33 @@ export default function TabOneScreen() {
               >
                 New Episode Releases
               </Text>
-              <Text style={{ color: "green" }}>see all</Text>
+              <Text
+                onPress={() => router.push(`/all/NewEpisodeReleases`)}
+                style={{ color: "green" }}
+              >
+                see all
+              </Text>
             </View>
 
             <FlatList
               horizontal={true}
               data={data2}
               renderItem={({ item }) => (
-                <Link href={`/info/${item.id}`}>
+                <TouchableOpacity
+                  onPress={() => router.push(`/info/${item.id}`)}
+                >
                   <Image
                     style={{
                       width: 150,
-                      height: 210,
+                      height: 220,
                       marginRight: 15,
                       borderRadius: 10,
                     }}
                     source={{
-                      uri: `${item.attributes.posterImage.tiny}`,
+                      uri: `${item.attributes.posterImage.small}`,
                     }}
                   />
-                </Link>
+                </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id}
             />
@@ -243,7 +259,12 @@ export default function TabOneScreen() {
             gap: 15,
           }}
         >
-          <AntDesign name="search1" size={32} color="#D6D6D6" />
+          <AntDesign
+            onPress={() => router.push("/search/")}
+            name="search1"
+            size={32}
+            color="#D6D6D6"
+          />
           <AntDesign name="bells" size={32} color="#D6D6D6" />
         </View>
       </View>

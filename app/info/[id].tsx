@@ -1,7 +1,8 @@
-import { Link, useGlobalSearchParams } from "expo-router";
-import { Text, View } from "react-native";
+import { useGlobalSearchParams } from "expo-router";
+import { Text, View, ImageBackground } from "react-native";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Info() {
   const { id } = useGlobalSearchParams();
@@ -21,17 +22,51 @@ export default function Info() {
   }, [id]);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Link
-        href="../"
-        style={{ backgroundColor: "#ADD8E6", padding: 10, borderRadius: 10 }}
-      >
-        Go back
-      </Link>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#1F222A",
+      }}
+    >
+      <LinearGradient
+        colors={["transparent", "rgba(0,0,0,1)"]}
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "10%",
+          flex: 1,
+          transform: "rotate(180deg)",
+          zIndex: 2,
+        }}
+      />
+      {data.attributes && data.attributes.coverImage && (
+        <ImageBackground
+          source={{
+            uri: `${data.attributes.coverImage.original}`,
+          }}
+          style={{
+            width: 500,
+            height: 270,
+          }}
+        />
+      )}
 
-      <Text>
-        {data.attributes && data.attributes.slug && data.attributes.description}
-      </Text>
+      {data.attributes &&
+        data.attributes.description &&
+        data.attributes.canonicalTitle && (
+          <View>
+            <Text style={{ color: "white", fontWeight: "700", fontSize: 30 }}>
+              {data.attributes.canonicalTitle}
+            </Text>
+            <Text style={{ color: "white" }}>
+              {data.attributes.description}
+            </Text>
+          </View>
+        )}
+
+      {(!data.attributes ||
+        !data.attributes.coverImage ||
+        !data.attributes.description) && <Text>Loading...</Text>}
     </View>
   );
 }
