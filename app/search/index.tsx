@@ -1,4 +1,4 @@
-import { useGlobalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import {
   FlatList,
   Text,
@@ -7,65 +7,48 @@ import {
   Image,
   SafeAreaView,
   TextInput,
-  Button,
+  ActivityIndicator,
 } from "react-native";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { AntDesign } from "@expo/vector-icons";
 
 export default function Search() {
-  const [data, setData] = useState<any>({});
+  const [data, setData] = useState<any>([]);
   const [param, setParam] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const search = () => {
-    const fetchData = async () => {
-      try {
-        const url = `https://kitsu.io/api/edge/anime?filter[text]=${param}`;
-
-        const result = await axios.get(url);
-        setData(result.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+  const search = async () => {
+    setLoading(true);
+    try {
+      const url = `https://kitsu.io/api/edge/anime?filter[text]=${param}`;
+      const result = await axios.get(url);
+      setData(result.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  console.log(param);
-
-  // useEffect(() => {
-  //   const stringValue = JSON.stringify(basket);
-  //   AsyncStorage.setItem("basket", stringValue);
-  // }, [basket]);
-
-  // const isSaved = basket.includes(id + "");
-
-  //   const newBasket = [...basket];
-  //   const index = newBasket.findIndex((unitId) => unitId === id + "");
-  //   newBasket.splice(index, 1);
-  //   setBasket(newBasket);
-  // };
   return (
     <View
       style={{
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        paddingTop: 50,
+        paddingTop: 70,
         backgroundColor: "#1F222A",
       }}
     >
-      <SafeAreaView>
+      <SafeAreaView style={{ flexDirection: "row", alignItems: "center" }}>
         <TextInput
           keyboardType="ascii-capable"
           style={{
-            width: 260,
+            width: 200,
             height: 60,
             margin: 10,
             borderWidth: 1,
-            padding: 10,
             borderRadius: 10,
             backgroundColor: "#181A20",
             color: "white",
@@ -76,66 +59,91 @@ export default function Search() {
           onChangeText={(text) => setParam(text)}
           placeholder="Search..."
           placeholderTextColor="#757575"
+        />
+        <TouchableOpacity
+          onPress={search}
+          style={{
+            height: 50,
+          }}
         >
-          {/* <AntDesign
-            name="search1"
-            size={20}
-            color="#757575"
-            style={{ marginRight: 10 }}
-          />{" "} */}
-        </TextInput>
-      </SafeAreaView>
-      <Button title="search" onPress={search} />
-
-      <FlatList
-        data={data}
-        renderItem={({ item }: any) => (
           <View
             style={{
-              width: 340,
               flex: 1,
               flexDirection: "row",
-              marginBottom: 15,
-              justifyContent: "center",
+              borderWidth: 3,
+              borderColor: "#06C149",
               alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 10,
+              padding: 10,
             }}
           >
-            <TouchableOpacity
-              style={{
-                flex: 1,
-              }}
-              onPress={() => router.push(`/info/${item.id}`)}
-            >
-              <Image
-                source={{
-                  uri: `${item.attributes.posterImage.small}`,
-                }}
-                style={{
-                  width: 150,
-                  height: 210,
-                  marginRight: 10,
-                  borderRadius: 10,
-                }}
-              />
-            </TouchableOpacity>
-
-            <View>
-              <Text
-                style={{
-                  fontWeight: "700",
-                  width: 180,
-                  color: "white",
-                  fontSize: 17,
-                  marginBottom: 90,
-                }}
-              >
-                {item.attributes.canonicalTitle}
-              </Text>
-            </View>
+            <Text style={{ color: "white" }}>SEARCH</Text>
           </View>
-        )}
-        keyExtractor={(item) => item.id}
-      />
+        </TouchableOpacity>
+      </SafeAreaView>
+
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      ) : (
+        <FlatList
+          data={data}
+          renderItem={({ item }: any) => (
+            <View
+              style={{
+                width: 340,
+                flex: 1,
+                flexDirection: "row",
+                marginTop: 15,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                }}
+                onPress={() => router.push(`/info/${item.id}`)}
+              >
+                <Image
+                  source={{
+                    uri: `${item.attributes.posterImage.small}`,
+                  }}
+                  style={{
+                    width: 150,
+                    height: 210,
+                    marginRight: 10,
+                    borderRadius: 10,
+                  }}
+                />
+              </TouchableOpacity>
+
+              <View>
+                <Text
+                  style={{
+                    fontWeight: "700",
+                    width: 180,
+                    color: "white",
+                    fontSize: 17,
+                    marginBottom: 90,
+                  }}
+                >
+                  {item.attributes.canonicalTitle}
+                </Text>
+              </View>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 }

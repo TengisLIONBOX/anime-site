@@ -51,18 +51,20 @@ export default function Info() {
         />
       )}
 
-      {data.attributes &&
-        data.attributes.description &&
-        data.attributes.canonicalTitle && (
-          <View>
-            <Text style={{ color: "white", fontWeight: "700", fontSize: 30 }}>
-              {data.attributes.canonicalTitle}
-            </Text>
-            <Text style={{ color: "white" }}>
-              {data.attributes.description}
-            </Text>
-          </View>
-        )}
+      <View style={{ padding: 10 }}>
+        {data.attributes &&
+          data.attributes.description &&
+          data.attributes.canonicalTitle && (
+            <View>
+              <Text style={{ color: "white", fontWeight: "700", fontSize: 30 }}>
+                {data.attributes.canonicalTitle}
+              </Text>
+              <Text style={{ color: "white" }}>
+                {data.attributes.description}
+              </Text>
+            </View>
+          )}
+      </View>
 
       {(!data.attributes ||
         !data.attributes.coverImage ||
